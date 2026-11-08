@@ -17,19 +17,19 @@ $\sigma$ directly controls the trade-off between many small accepted moves
 (high acceptance, slow exploration) and few large moves (low acceptance,
 long stays). Both extremes produce poor mixing.
 
-Classical optimal-scaling theory (Roberts, Gelman & Gilks, 1997; Roberts &
-Rosenthal, 2001) studies RWMH targeting a $d$-dimensional product density and
+Classical optimal-scaling theory (Roberts, Gelman and Gilks, 1997; Roberts and
+Rosenthal, 2001) studies RWMH targeting a $d$ dimensional product density and
 shows that, as $d \to \infty$,
 
-- the asymptotic-variance-minimising proposal scale is $\sigma^\star = 2.38/\sqrt{d}$,
+- the asymptotic-variance-minimising proposal scale is $\sigma^\star = \frac{2.38}{\sqrt{d}}$
 - the corresponding acceptance rate is approximately 0.234.
 
-For $d=1$ the analogous optimal acceptance rate is approximately 0.44.
+For $d = 1$ the analogous optimal acceptance rate is approximately 0.44.
 
 Project question. How does the proposal scale $\sigma$ affect mixing and
 estimation accuracy of RWMH, and does the classical optimal-scaling result
-($\sigma^\star = 2.38/\sqrt{d}$, acceptance $\approx$ 0.234) hold in practice
-across dimensions and computational budgets?
+(with $\sigma^\star = \frac{2.38}{\sqrt{d}}$ and acceptance $\approx$ 0.234)
+hold in practice across dimensions and computational budgets?
 
 Relevance. Getting the tuning right is the single most important practical
 skill in MCMC. Being able to demonstrate why the 0.234 rule is useful, and
@@ -69,7 +69,7 @@ leaving a clean MH ratio.
 - Diagnostics: I use trace plots, autocorrelation functions, and the
   effective sample size (initial positive-sequence estimator) as the main
   performance measures.
-- Multiple chains / replications: to estimate MSE of the posterior mean
+- Multiple chains and replications: to estimate MSE of the posterior mean
   reliably, I use independent replications per configuration.
 
 ### 2.3 Why this method suits the question
@@ -84,13 +84,13 @@ scale both theoretically and empirically.
 I study:
 
 - Dimensions $d \in \{1, 5, 20\}$.
-- Proposal scales 12 log-spaced values from $0.15\,\sigma^\star$ to
-  $8\,\sigma^\star$, where $\sigma^\star = 2.38/\sqrt d$.
+- Proposal scales 12 log-spaced values from $0.15 \sigma^\star$ to
+  $8 \sigma^\star$, where $\sigma^\star = \frac{2.38}{\sqrt{d}}$.
 - Iterations $N = 1500$ after burn-in of 500.
 - Replications $R = 100$ per cell (200 in the baseline).
 - Targets $N(0, I_d)$ for the main study, and an AR(1) covariance with
   $\rho = 0.8$ in $d = 10$ as a robustness check.
-- Metrics acceptance rate, ACF and trace plots, mean ESS per dimension,
+- Metrics: acceptance rate, ACF and trace plots, mean ESS per dimension,
   MSE of the posterior mean across replications, wall-clock runtime, and MSE
   as a function of $N$ at the optimal scale.
 
@@ -122,8 +122,7 @@ central algorithm.
 
 ### 4.1 Validation against known results
 
-Target $N(0, I_5)$, scale fixed at $\sigma^\star = 2.38/\sqrt 5$, one long
-chain of $200{,}000$ post-burn-in draws.
+The validation target is $N(0, I_5)$ with scale $\sigma^\star = \frac{2.38}{\sqrt{5}}$ and 200,000 post-burn-in draws from one long chain.
 
 Results (`outputs/tables/table3_validation.csv`, also summarised as Table 3
 below):
@@ -132,38 +131,36 @@ below):
   zero in every coordinate.
 - Estimated variances are within Monte Carlo error of 1 in every coordinate.
 - Estimated off-diagonal covariances are negligible
-  ($\max |\hat\rho_{jk}| \approx 0.012$).
+  (with maximum $|\hat\rho_{jk}| \approx 0.012$).
 
 | dim | mean est. | MCSE | variance est. | KS stat | KS $p$ |
 |---:|---:|---:|---:|---:|---:|
 | 0 | $-0.0132$ | 0.0093 | 1.0010 | 0.0080 | 0.000 |
 | 1 | $-0.0193$ | 0.0093 | 1.0016 | 0.0107 | 0.000 |
-| 2 | $ 0.0028$ | 0.0091 | 1.0032 | 0.0037 | 0.009 |
+| 2 | $+0.0028$ | 0.0091 | 1.0032 | 0.0037 | 0.009 |
 | 3 | $-0.0169$ | 0.0093 | 1.0122 | 0.0079 | 0.000 |
 | 4 | $-0.0005$ | 0.0093 | 1.0199 | 0.0073 | 0.000 |
 
 Table 3. Validation on $N(0, I_5)$, one chain of 200,000 post-burn-in draws
-at $\sigma = 2.38/\sqrt 5$. All means are within $4\times\mathrm{MCSE}$ of
+at $\sigma^\star = \frac{2.38}{\sqrt{5}}$. All means are within $4 \times \mathrm{MCSE}$ of
 zero; variances are close to 1. Raw KS tests reject due to autocorrelation
 (see discussion below); thinned KS tests in `validation.json` pass.
 
 On the KS tests. A naive Kolmogorov-Smirnov test applied to the raw 200,000
 draws rejects normality in every coordinate (KS statistics 0.004 to 0.011,
-all $p < 0.01$). This is a power / autocorrelation artefact, not evidence
+with all $p < 0.01$). This is a power / autocorrelation artefact, not evidence
 against the sampler:
 
 - KS assumes independent draws; my chain is autocorrelated, so the KS null
   distribution is wrong.
-- At $n = 2\times 10^5$, KS detects deviations of about 0.003 at the 5% level,
+- At $n = 2 \times 10^5$, KS detects deviations of about 0.003 at the 5% level,
   well below the deviation induced by MCMC autocorrelation at that sample
   size.
 
 Repeating the test on draws thinned to approximately the effective sample
-size (thin factor $\lceil n/\mathrm{ESS}_j \rceil$, giving
-$n_{\text{thinned}} \approx \mathrm{ESS}_j \approx 11{,}000$ per coordinate)
-gives:
+size (about 11,000 thinned draws per coordinate) gives:
 
-| dim | thin | $n_{\text{thinned}}$ | KS stat | $p$ |
+| dim | thin | thinned n | KS stat | $p$ |
 |---:|---:|---:|---:|---:|
 | 0 | 18 | 11112 | 0.0119 | 0.086 |
 | 1 | 18 | 11112 | 0.0088 | 0.349 |
@@ -176,20 +173,20 @@ $p = 0.030$) is the coordinate whose sample variance is highest (1.0199, about
 two Monte Carlo standard errors above 1). This is a mild departure that is
 consistent both with a genuine small deviation and with residual
 autocorrelation inflating the ESS estimate for that coordinate. With five
-tests at 5%, one spurious rejection is expected (family-wise error
-$\approx 23\%$); the result is marginal, not alarming. Overall the thinned
-tests confirm what the moment-based checks already showed: the sampler targets
-$N(0, I_5)$ correctly. The raw-draw tests, by contrast, were over-powered and
-are not a valid diagnostic for a correlated MCMC sample.
+tests at 5%, one spurious rejection is expected (family-wise error near 23%);
+the result is marginal, not alarming. Overall the thinned tests confirm what
+the moment-based checks already showed: the sampler targets $N(0, I_5)$
+correctly. The raw-draw tests, by contrast, were over-powered and are not a
+valid diagnostic for a correlated MCMC sample.
 
 ### 4.2 Effect of proposal scale on acceptance rate (Figure 1)
 
 ![Figure 1. Acceptance rate vs proposal scale for d = 1, 5, 20. Dashed line: 0.234 (large-d theoretical target). Dotted line: 0.44 (d = 1 target). Acceptance decreases monotonically with scale; at the classical reference scale the curves pass through 0.446 (d = 1), 0.288 (d = 5), 0.248 (d = 20).](outputs/figures/fig1_acc_vs_scale.png)
 
-As expected, acceptance decreases monotonically with $\sigma$, and the curve
+As expected, acceptance decreases monotonically with $\sigma$ and the curve
 at $\sigma = \sigma^\star$ passes through roughly 0.23 for large $d$. For
 $d = 1$ the same scaling rule produces a higher acceptance rate (about 0.45),
-which already hints that the finite-$d$ optimum differs from the large-$d$
+which already hints that the finite $d$ optimum differs from the large $d$
 rule.
 
 ### 4.3 MSE as a function of proposal scale (Figure 2)
@@ -203,18 +200,18 @@ scale:
   target slowly; MSE is high.
 - For large $\sigma$ most proposals are rejected; the chain is sticky; MSE is
   high.
-- The minimum is well approximated by $\sigma^\star = 2.38/\sqrt d$.
+- The minimum is well approximated by $\sigma^\star = \frac{2.38}{\sqrt{d}}$.
 
-| $d$ | $\sigma^\star = 2.38/\sqrt{d}$ | acceptance at $\sigma^\star$ | ESS / $N$ at $\sigma^\star$ | MSE at $\sigma^\star$ |
+| $d$ | $\sigma^\star = \frac{2.38}{\sqrt{d}}$ | acceptance at $\sigma^\star$ | ESS over $N$ at $\sigma^\star$ | MSE at $\sigma^\star$ |
 |---:|---:|---:|---:|---:|
 | 1  | 2.380 | 0.446 | 0.230 | $2.49 \times 10^{-3}$ |
 | 5  | 1.064 | 0.288 | 0.062 | $1.16 \times 10^{-2}$ |
 | 20 | 0.532 | 0.248 | 0.019 | $3.90 \times 10^{-2}$ |
 
 Table 1. Acceptance rate, ESS per iteration, and MSE of the posterior mean at
-the classical optimal scale $\sigma^\star = 2.38/\sqrt d$. Acceptance at
-$d=20$ is within 0.02 of the theoretical 0.234; $d=1$ matches the classical
-0.44 value closely. ESS/$N$ falls roughly as $1/d$, as expected for isotropic
+the classical optimal scale $\sigma^\star = \frac{2.38}{\sqrt{d}}$. Acceptance at
+$d = 20$ is within 0.02 of the theoretical 0.234; $d = 1$ matches the classical
+0.44 value closely. The ratio of ESS to $N$ falls roughly as $\frac{1}{d}$, as expected for isotropic
 RWMH.
 
 `outputs/tables/table1_optimal_scale.csv` also reports the empirical
@@ -222,7 +219,7 @@ minimiser of MSE for each $d$, together with the theoretical $\sigma^\star$.
 With only 12 log-spaced points the argmin is coarse. The sensible
 interpretation is a flat optimal region (MSE within one standard error of its
 minimum) rather than a single point. For $d = 20$ that region comfortably
-contains $\sigma^\star$; for $d = 1$ it sits slightly to the right of $2.38$,
+contains $\sigma^\star$; for $d = 1$ it sits slightly to the right of 2.38,
 consistent with the known $d = 1$ optimum.
 
 ### 4.4 MSE as a function of acceptance rate (Figure 3)
@@ -249,18 +246,18 @@ and collapses when the scale is too small or too large. ESS and MSE give the
 same qualitative ranking, which is a useful practical message: diagnosing ESS
 is often more informative than counting acceptance rates alone.
 
-### 4.6 Mixing: trace plots and autocorrelation (Figures 5 and 6, $d=5$)
+### 4.6 Mixing: trace plots and autocorrelation (Figures 5 and 6, $d = 5$)
 
 ![Figure 5. Trace plots for d = 5 at proposal-scale ratios 0.2 (too small), 1 (optimal), and 5 (too large). The optimal-scale chain mixes; the small-scale chain drifts slowly; the large-scale chain makes no accepted moves at all in 1,000 iterations and stays at its starting value, the limiting case of "too large".](outputs/figures/fig5_trace.png)
 
 ![Figure 6. Autocorrelation of coordinate 1 for d = 5, same three scales. ACF decays fastest at the optimal scale; at too-small scale it remains high for hundreds of lags. The too-large chain is frozen (zero variance), so its ACF is undefined and is omitted. The absence of a third curve is itself the finding.](outputs/figures/fig6_acf.png)
 
-For $d=5$ I compare the trace and ACF at $\sigma/\sigma^\star = 0.2$ (too
+For $d = 5$ I compare the trace and ACF at $\frac{\sigma}{\sigma^\star} = 0.2$ (too
 small), $1$ (optimal) and $5$ (too large):
 
 - Too-small scale: the trace shows slow drift; the ACF decays very slowly.
 - Optimal scale: the trace mixes quickly and the ACF drops off.
-- Too-large scale: at $\sigma/\sigma^\star = 5$ the acceptance rate is
+- Too-large scale: at $\frac{\sigma}{\sigma^\star} = 5$ the acceptance rate is
   essentially zero. The chain never moves from its starting value over 1,000
   iterations, so its trace is flat and its ACF is undefined. The diagnostics
   module returns NaN for a zero-variance series, which is why Figure 6 shows
@@ -276,49 +273,48 @@ This is the clearest qualitative illustration of why tuning matters.
 `outputs/tables/table2_baseline.csv` (summarised below as Table 2) compares
 RWMH at $\sigma^\star$ with i.i.d. sampling at the same retained-draw count:
 
-- MSE ratio (RWMH / iid): $3.8\times$ for $d = 1$, $16.6\times$ for $d = 5$,
-  $59\times$ for $d = 20$. The gap grows roughly linearly with $d$: the
+- MSE ratio (RWMH over iid): 3.8 times for $d = 1$ and 16.6 times for $d = 5$ and 59 times for $d = 20$. The gap grows roughly linearly with $d$: the
   expected ESS penalty of RWMH relative to direct sampling.
-- Wall-clock ratio: $828\times$ for $d = 1$, $209\times$ for $d = 5$,
-  $58\times$ for $d = 20$. The wall-clock gap shrinks with dimension because
-  i.i.d. sampling's per-draw cost scales with $d$, while RWMH's per-iteration
-  cost also scales with $d$; but the ratio compresses as both grow.
+- Wall-clock ratio: 828 times for $d = 1$ and 209 times for $d = 5$ and
+  58 times for $d = 20$. The wall-clock gap shrinks with dimension because
+  i.i.d. sampling's per-draw cost scales with $d$ while RWMH's per-iteration
+  cost also scales with $d$ but the ratio compresses as both grow.
 
-| $d$ | method | MSE | ESS | runtime (s) | MSE ratio (RWMH/iid) |
+| $d$ | method | MSE | ESS | runtime (s) | MSE ratio |
 |---:|---|---:|---:|---:|---:|
-| 1  | RWMH(optimal) | $2.49\times10^{-3}$ | 345.2 | 0.0141 | $3.8\times$ |
+| 1  | RWMH(optimal) | $2.49\times10^{-3}$ | 345.2 | 0.0141 | 3.8 |
 | 1  | iid           | $6.52\times10^{-4}$ | 1500  | $1.7\times10^{-5}$ | 1.0 |
-| 5  | RWMH(optimal) | $1.16\times10^{-2}$ | 93.4  | 0.0173 | $16.6\times$ |
+| 5  | RWMH(optimal) | $1.16\times10^{-2}$ | 93.4  | 0.0173 | 16.6 |
 | 5  | iid           | $7.01\times10^{-4}$ | 1500  | $8.3\times10^{-5}$ | 1.0 |
-| 20 | RWMH(optimal) | $3.90\times10^{-2}$ | 29.0  | 0.0186 | $59\times$ |
+| 20 | RWMH(optimal) | $3.90\times10^{-2}$ | 29.0  | 0.0186 | 59 |
 | 20 | iid           | $6.62\times10^{-4}$ | 1500  | $3.2\times10^{-4}$ | 1.0 |
 
 Table 2. Baseline comparison, 200 replications per cell, $N = 1500$ retained
 draws. RWMH at the classical optimal scale is 3.8 to 59 times less accurate
 and 58 to 828 times slower than direct i.i.d. sampling: the applicability tax.
 
-The honest trade-off is statistical efficiency vs applicability: RWMH costs
-3.8 to 59 times more samples and 58 to 828 times more wall-clock time for the
-same accuracy, but remains the only viable option when direct sampling from
-$\pi$ is unavailable. At moderate $d$ (tens), the accuracy penalty is a small
-constant factor and the algorithm is entirely practical.
+The honest trade-off is statistical efficiency versus applicability: RWMH
+costs 3.8 to 59 times more samples and 58 to 828 times more wall-clock time
+for the same accuracy, but remains the only viable option when direct
+sampling from $\pi$ is unavailable. At moderate $d$ (tens), the accuracy
+penalty is a small constant factor and the algorithm is entirely practical.
 
 ### 4.8 Computational-budget condition (Figure 7)
 
 ![Figure 7. MSE of the posterior mean vs iteration count N at d = 20 at the classical reference scale. Points lie close to the reference C/N line, confirming 1/N asymptotic decay.](outputs/figures/fig7_budget.png)
 
 `outputs/results_budget_summary.csv` and `fig7_budget.png` study the
-optimal-scale chain at $d=20$ as $N$ varies over $250, \dots, 8000$. The MSE
-of the posterior mean decays like $1/N$ with a slope close to $-1$ on log-log
+optimal-scale chain at $d = 20$ as $N$ varies from 250 to 8000. The MSE
+of the posterior mean decays like $\frac{1}{N}$ with a slope close to $-1$ on log-log
 axes, confirming that the chain, at the optimal scale, provides roughly the
-$1/N$ efficiency of i.i.d. sampling up to the ESS correction.
+$\frac{1}{N}$ efficiency of i.i.d. sampling up to the ESS correction.
 
-The `mse_x_n` column rises from 53.9 (at $N=250$) to 62.3 (at $N=8000$): MSE
-decays slightly faster than $1/N$ at small $N$ (finite-sample effect of a
-fixed 500-iteration burn-in) and asymptotes to $\mathrm{MSE} \approx 62/N$ for
-large $N$, matching the classical $1/N$ rate. Cross-check: the budget study at
-$N=2000$ gives MSE $0.0307$, and interpolating the baseline at $N=1500$ via
-the asymptotic constant gives $62/1500 \approx 0.041$, close to the
+The `mse_x_n` column rises from 53.9 (at $N = 250$) to 62.3 (at $N = 8000$): MSE
+decays slightly faster than $\frac{1}{N}$ at small $N$ (finite-sample effect of a
+fixed 500-iteration burn-in) and asymptotes to $\mathrm{MSE} \approx \frac{62}{N}$ for
+large $N$ matching the classical $\frac{1}{N}$ rate. Cross-check: the budget study at
+$N = 2000$ gives MSE $0.0307$ and interpolating the baseline at $N = 1500$ via
+the asymptotic constant gives $\frac{62}{1500} \approx 0.041$ which is close to the
 baseline's $0.039$. Two independent scripts agree.
 
 ### 4.9 Robustness to a correlated target (Figure 9)
@@ -326,10 +322,10 @@ baseline's $0.039$. Two independent scripts agree.
 ![Figure 9. Robustness check: MSE vs proposal scale for an AR(1) target with rho = 0.8 in d = 10. The U-shape persists, but the minimum shifts right of the classical reference scale because the isotropic proposal mismatches the correlated target.](outputs/figures/fig9_robust_corr.png)
 
 The classical optimal-scaling result assumes the proposal has the same shape
-as the target. To test sensitivity, I use an AR(1) covariance with $\rho=0.8$
-in $d=10$ and again sweep $\sigma$ relative to $2.38/\sqrt d$.
+as the target. To test sensitivity, I use an AR(1) covariance with $\rho = 0.8$
+in $d = 10$ and again sweep $\sigma$ relative to $\frac{2.38}{\sqrt{d}}$.
 
-The MSE-versus-scale curve is still U-shaped, but its minimum is shifted
+The MSE-versus-scale curve is still U-shaped but its minimum is shifted
 somewhat to the right of $\sigma^\star$, and the curve is flatter on the right
 side. This is expected: the proposal used here is isotropic while the target
 is strongly correlated, so the classical 0.234 rule is only approximately
@@ -346,16 +342,16 @@ What the results show.
 - The self-implemented RWMH reproduces the target moments to within Monte
   Carlo error and passes a correctly-specified (thinned) KS test.
 - MSE and ESS as functions of the proposal scale are both U-shaped, and the
-  minimiser is well approximated by $\sigma^\star = 2.38/\sqrt d$ for
+  minimiser is well approximated by $\sigma^\star = \frac{2.38}{\sqrt{d}}$ for
   moderate and large $d$.
-- The optimal acceptance rate depends on dimension: it is close to $0.234$ for
-  $d = 20$ and close to $0.44$ for $d = 1$, which is exactly what the
-  classical asymptotic theory predicts.
-- MSE at the optimal scale decays as $1/N$ over the range studied.
+- The optimal acceptance rate depends on dimension: it is close to 0.234 for
+  $d = 20$ and close to 0.44 for $d = 1$, which is exactly what the classical
+  asymptotic theory predicts.
+- MSE at the optimal scale decays as $\frac{1}{N}$ over the range studied.
 
 When the method works well.
 
-- For $d$ of practical size (tens), the simple rule $\sigma = 2.38/\sqrt d$
+- For $d$ of practical size (tens), the simple rule $\sigma = \frac{2.38}{\sqrt{d}}$
   gives mixing close to the empirical optimum and can be adopted without
   further tuning.
 - When target and proposal share their shape, the theoretical 0.234 rule is a
@@ -363,27 +359,27 @@ When the method works well.
 
 When it performs poorly.
 
-- Low dimensions: the large-$d$ rule overshoots the scale; acceptances can
+- Low dimensions: the large $d$ rule overshoots the scale; acceptances can
   exceed 0.4 and MSE is minimised at a smaller proposal scale than
   $\sigma^\star$.
-- Correlated / badly scaled targets: an isotropic proposal is wasteful and the
+- Correlated or badly scaled targets: an isotropic proposal is wasteful and the
   optimum shifts. In a serious application you would pre-condition on an
   estimate of the target covariance, or use adaptive MCMC.
 - Very high dimensions: even at the optimal scale, RWMH's efficiency decays
   with $d$ and one rapidly reaches the regime where gradient-based MCMC
-  (HMC / NUTS) is preferable.
+  (HMC or NUTS) is preferable.
 
 Trade-offs.
 
-- Accuracy vs cost. RWMH is statistically less efficient than i.i.d. sampling
-  by a factor of 3.8 to 59 at the optimal scale, and 58 to 828 times less
-  efficient in wall-clock terms. The baseline comparison makes this explicit.
-  The right answer for a real problem is usually to prioritise HMC when
-  feasible and to reserve RWMH for low- or medium-dimensional targets.
-- Tuning cost. The MSE-vs-scale curve is informative but requires many runs.
-  In practice one uses a short pilot run to choose $\sigma$ to give acceptance
-  $\approx$ 0.23, which recovers most of the optimal performance at almost no
-  extra cost.
+- Accuracy versus cost. RWMH is statistically less efficient than i.i.d.
+  sampling by a factor of 3.8 to 59 at the optimal scale, and 58 to 828 times
+  less efficient in wall-clock terms. The baseline comparison makes this
+  explicit. The right answer for a real problem is usually to prioritise HMC
+  when feasible and to reserve RWMH for low- or medium-dimensional targets.
+- Tuning cost. The MSE-versus-scale curve is informative but requires many
+  runs. In practice one uses a short pilot run to choose $\sigma$ to give
+  acceptance $\approx$ 0.23, which recovers most of the optimal performance at
+  almost no extra cost.
 
 Limitations of this study.
 
@@ -394,19 +390,19 @@ Limitations of this study.
 - The ESS estimator used is the simple initial positive-sequence version; more
   refined estimators (Geyer, Stan's) would give slightly different numbers but
   the ordering of configurations is robust.
-- Only single-chain runs were used; multi-chain diagnostics ($\hat R$) would
+- Only single-chain runs were used; multi-chain diagnostics ($\hat{R}$) would
   add confidence but not change the conclusions.
 
-Unexpected / negative findings.
+Unexpected and negative findings.
 
-- The optimum for $d=1$ is notably not at 0.234. That is a useful concrete
+- The optimum for $d = 1$ is notably not at 0.234. That is a useful concrete
   demonstration that the 0.234 rule of thumb is asymptotic in $d$.
 - For the correlated AR(1) target the optimal scale is larger than
-  $2.38/\sqrt d$. That is, the naive application of the rule understates the
+  $\frac{2.38}{\sqrt{d}}$. That is, the naive application of the rule understates the
   needed step size when the proposal shape is wrong.
-- The raw-draw KS test rejects at $n = 2\times 10^5$ purely from
+- The raw-draw KS test rejects at $n = 2 \times 10^5$ purely from
   autocorrelation; reporting the thinned p-values as well turns an apparent
-  failure into a methodological point. At $\sigma/\sigma^\star = 5$, the chain
+  failure into a methodological point. At $\frac{\sigma}{\sigma^\star} = 5$ the chain
   is so rarely accepted that its ACF is undefined, a quantitative reminder
   that "too large" is not merely inefficient but can be fatal.
 
@@ -417,32 +413,32 @@ Unexpected / negative findings.
 The proposal scale of a random-walk Metropolis-Hastings sampler has a
 first-order effect on both mixing and estimation accuracy. For an isotropic
 Gaussian target and an isotropic Gaussian proposal, the classical
-$\sigma^\star = 2.38/\sqrt d$ rule and the 0.234 acceptance target are
+$\sigma^\star = \frac{2.38}{\sqrt{d}}$ rule and the 0.234 acceptance target are
 strongly supported by my experiments in dimension $d \ge 5$, and degrade
 gracefully in $d = 1$. The results also highlight two practical lessons:
 
-1. Target acceptance around 0.234 for medium-to-high dimension, but do not
+1. Target acceptance around 0.234 for medium-to-high dimension but do not
    force it in very low dimension.
 2. Use ESS and the U-shape of MSE, not acceptance rate alone, to judge whether
    tuning has succeeded.
 
 The clearest limitations are the sensitivity to correlation between
 coordinates and the inherent gap to i.i.d. sampling; adaptive or
-gradient-based MCMC addresses these, and is the natural next step.
+gradient-based MCMC addresses these and is the natural next step.
 
 ---
 
 ## References
 
-- Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., &
+- Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., and
   Teller, E. (1953). Equation of state calculations by fast computing
   machines. J. Chem. Phys., 21, 1087-1092.
 - Hastings, W. K. (1970). Monte Carlo sampling methods using Markov chains and
   their applications. Biometrika, 57, 97-109.
-- Roberts, G. O., Gelman, A., & Gilks, W. R. (1997). Weak convergence and
+- Roberts, G. O., Gelman, A., and Gilks, W. R. (1997). Weak convergence and
   optimal scaling of random walk Metropolis algorithms. Annals of Applied
   Probability, 7, 110-120.
-- Roberts, G. O., & Rosenthal, J. S. (2001). Optimal scaling for various
+- Roberts, G. O., and Rosenthal, J. S. (2001). Optimal scaling for various
   Metropolis-Hastings algorithms. Statistical Science, 16, 351-367.
 - Geyer, C. J. (1992). Practical Markov chain Monte Carlo. Statistical
   Science, 7, 473-483.
