@@ -17,14 +17,14 @@ $\sigma$ directly controls the trade-off between many small accepted moves
 (high acceptance, slow exploration) and few large moves (low acceptance,
 long stays). Both extremes produce poor mixing.
 
-Classical optimal-scaling theory (Roberts, Gelman and Gilks, 1997; Roberts and
+Classical optimal-scaling theory (Roberts, Gelman & Gilks, 1997; Roberts &
 Rosenthal, 2001) studies RWMH targeting a $d$ dimensional product density and
 shows that, as $d \to \infty$,
 
-- the asymptotic-variance-minimising proposal scale is $\sigma^\star = \frac{2.38}{\sqrt{d}}$
-- the corresponding acceptance rate is approximately 0.234.
+- the asymptotic-variance-minimising proposal scale is $\sigma^\star = \frac{2.38}{\sqrt{d}}$ (Roberts, Gelman & Gilks, 1997)
+- the corresponding acceptance rate is approximately 0.234 (Roberts, Gelman & Gilks, 1997; Roberts & Rosenthal, 2001).
 
-For $d = 1$ the analogous optimal acceptance rate is approximately 0.44.
+For $d = 1$ the analogous optimal acceptance rate is approximately 0.44 (Roberts & Rosenthal, 2001).
 
 Project question. How does the proposal scale $\sigma$ affect mixing and
 estimation accuracy of RWMH, and does the classical optimal-scaling result
@@ -46,8 +46,8 @@ across budgets.
 
 ### 2.1 Purpose
 
-RWMH builds a Markov chain whose stationary distribution is the target $\pi$.
-Starting from $x_0$:
+RWMH builds a Markov chain whose stationary distribution is the target $\pi$
+(Metropolis et al., 1953; Hastings, 1970). Starting from $x_0$:
 
 1. Draw $\xi \sim N(0, I_d)$ and set $x' = x + \sigma\xi$.
 2. Compute the acceptance ratio in log space:
@@ -55,8 +55,8 @@ Starting from $x_0$:
 3. Draw $U \sim \mathrm{Unif}(0,1)$ and set $x_{t+1} = x'$ if $\log U < \log\alpha$;
    otherwise $x_{t+1} = x$.
 
-The symmetry of the random-walk proposal makes the Hastings correction cancel,
-leaving a clean MH ratio.
+The symmetry of the random-walk proposal makes the Hastings correction cancel
+(Hastings, 1970), leaving a clean MH ratio.
 
 ### 2.2 Practical considerations
 
@@ -67,8 +67,8 @@ leaving a clean MH ratio.
   the proposal is appropriate; the classical result assumes the proposal has
   the same shape as (a scaled version of) the target.
 - Diagnostics: I use trace plots, autocorrelation functions, and the
-  effective sample size (initial positive-sequence estimator) as the main
-  performance measures.
+  effective sample size (initial positive-sequence estimator; Geyer, 1992)
+  as the main performance measures.
 - Multiple chains and replications: to estimate MSE of the posterior mean
   reliably, I use independent replications per configuration.
 
@@ -348,7 +348,8 @@ What the results show.
   moderate and large $d$.
 - The optimal acceptance rate depends on dimension: it is close to 0.234 for
   $d = 20$ and close to 0.44 for $d = 1$, which is exactly what the classical
-  asymptotic theory predicts.
+  asymptotic theory predicts (Roberts, Gelman & Gilks, 1997; Roberts &
+  Rosenthal, 2001).
 - MSE at the optimal scale decays as $\frac{1}{N}$ over the range studied.
 
 When the method works well.
@@ -432,18 +433,16 @@ gradient-based MCMC addresses these and is the natural next step.
 
 ## References
 
-- Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., and
-  Teller, E. (1953). Equation of state calculations by fast computing
-  machines. J. Chem. Phys., 21, 1087-1092.
-- Hastings, W. K. (1970). Monte Carlo sampling methods using Markov chains and
-  their applications. Biometrika, 57, 97-109.
-- Roberts, G. O., Gelman, A., and Gilks, W. R. (1997). Weak convergence and
-  optimal scaling of random walk Metropolis algorithms. Annals of Applied
-  Probability, 7, 110-120.
-- Roberts, G. O., and Rosenthal, J. S. (2001). Optimal scaling for various
-  Metropolis-Hastings algorithms. Statistical Science, 16, 351-367.
-- Geyer, C. J. (1992). Practical Markov chain Monte Carlo. Statistical
-  Science, 7, 473-483.
+- Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., & Teller, E. (1953). Equation of state calculations by fast computing machines. *Journal of Chemical Physics*, 21(6), 1087–1092. https://doi.org/10.1063/1.1699114
+
+- Hastings, W. K. (1970). Monte Carlo sampling methods using Markov chains and their applications. *Biometrika*, 57(1), 97–109. https://doi.org/10.1093/biomet/57.1.97
+
+- Roberts, G. O., Gelman, A., & Gilks, W. R. (1997). Weak convergence and optimal scaling of random walk Metropolis algorithms. *Annals of Applied Probability*, 7(1), 110–120. https://doi.org/10.1214/aoap/1034625254
+
+- Roberts, G. O., & Rosenthal, J. S. (2001). Optimal scaling for various Metropolis–Hastings algorithms. *Statistical Science*, 16(4), 351–367. https://doi.org/10.1214/ss/1015346320
+
+- Geyer, C. J. (1992). Practical Markov chain Monte Carlo. *Statistical Science*, 7(4), 473–483. \newline
+https://doi.org/10.1214/ss/1177011137
 
 ---
 
