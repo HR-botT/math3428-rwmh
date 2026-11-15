@@ -36,7 +36,8 @@ package is used to run the sampler.**
 
 - Python ≥ 3.9
 - Packages: `numpy`, `scipy`, `pandas`, `matplotlib`
-- Optional (for building the PDF/notebook): `pandoc`, a LaTeX engine
+- For rebuilding the report: `pandoc`, a LaTeX engine with `xelatex`
+  (e.g. MiKTeX or TeX Live), and a working PowerShell environment
 
 Install Python dependencies:
 
@@ -60,20 +61,48 @@ and figure generation in sequence.
 lower `REPS` and `N_SCALES` in `code/simulation_study.py`; the qualitative
 conclusions are robust to this.
 
-## Build the report
+## Report sources and build
+
+The report has **one hand-edited source**: `report.ipynb`. The Markdown file
+`report.md` and the final PDF `report.pdf` are both **generated** from the
+notebook — they should not be edited by hand.
+
+Pipeline: `report.ipynb` → `extract_report.py` → `report.md` → `pandoc` →
+`report.pdf`.
+
+### One-command build (Windows PowerShell)
 
 From the project root:
 
-```bash
-# PDF (required submission)
-pandoc report.md -o report.pdf --pdf-engine=xelatex
-
-# Jupyter Notebook source (required by §5 for Python projects)
-pandoc report.md -o report.ipynb
+```powershell
+.\build.ps1
 ```
 
-Both `report.pdf` and `report.ipynb` are committed, so this step is optional
-for marking; it is included so the source can be regenerated.
+If PowerShell blocks script execution, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\build.ps1
+```
+
+The script checks that `xelatex` and `report.ipynb` are available, extracts
+`report.md` from the last markdown cell of `report.ipynb`, then renders
+`report.pdf` via pandoc.
+
+### Manual build
+
+```powershell
+# 1. Extract report.md from the last markdown cell of report.ipynb
+python extract_report.py
+
+# 2. Render the PDF via pandoc + xelatex
+pandoc report.md -o report.pdf --pdf-engine=xelatex `
+    -V geometry:margin=1.5cm -V fontsize=10pt -V linestretch=1.05 `
+    --include-in-header=header.tex
+```
+
+Both `report.md` and `report.pdf` are committed, so rebuilding is optional
+for marking; it is included so the source can be regenerated from
+`report.ipynb`.
 
 ## What the pipeline produces
 
@@ -102,8 +131,11 @@ inspected without re-running the pipeline.
 | `code/budget_study.py` | MSE vs iterations at optimal scale |
 | `code/make_figures.py` | All figures and tables |
 | `code/run_all.py` | Runs the full pipeline in order |
-| `report.md` | Report source (Markdown; pandoc input) |
-| `report.ipynb` | Report source (Jupyter Notebook; required by §5) |
+| `report.ipynb` | **Report source (Jupyter Notebook; hand-edited)** |
+| `extract_report.py` | Extracts the last markdown cell of `report.ipynb` → `report.md` |
+| `build.ps1` | One-command build: extract → pandoc → `report.pdf` |
+| `header.tex` | LaTeX header included by pandoc |
+| `report.md` | Generated Markdown source (pandoc input) |
 | `report.pdf` | Final 6–8 page report |
 | `requirements.txt` | Python dependencies |
 | `environment/` | Exact version snapshot (see below) |
@@ -127,14 +159,10 @@ inspected without re-running the pipeline.
     > environment/sessionInfo.txt
   ```
 
-- **Rebuilding the report:**
-
-  ```bash
-  pandoc report.md -o report.pdf --pdf-engine=xelatex
-  pandoc report.md -o report.ipynb
-  ```
-
-  Requires `pandoc` and a LaTeX engine. `report.pdf` and `report.ipynb` are
-  both committed, so this step is optional.
+- **Rebuilding the report:** edit and save `report.ipynb`, then run
+  `.\build.ps1` (or the manual build above). Requires `pandoc`, `xelatex`,
+  and the Python packages listed in `requirements.txt`.
 
 ## Contribution statement
+
+[TODO: fill in per-member contributions before submission.]

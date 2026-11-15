@@ -1,6 +1,6 @@
 # Random-Walk Metropolis-Hastings: How Proposal Scale Affects Mixing and Estimation Accuracy
 
-Author: MAI, Qinyuan  SIU, Tsz Cheung  LEE, Hoi Kiu
+Author: [MAI, Qinyuan (21153159)], [SIU, Tsz Cheung (SID)], [LEE, Hoi KIU (SID)]
 Course: MATH 3428 Statistical Computing, Fall 2026-27
 
 ---
@@ -181,7 +181,7 @@ valid diagnostic for a correlated MCMC sample.
 
 ### 4.2 Effect of proposal scale on acceptance rate (Figure 1)
 
-![Figure 1. Acceptance rate vs proposal scale for d = 1, 5, 20. Dashed line: 0.234 (large-d theoretical target). Dotted line: 0.44 (d = 1 target). Acceptance decreases monotonically with scale; at the classical reference scale the curves pass through 0.446 (d = 1), 0.288 (d = 5), 0.248 (d = 20).](outputs/figures/fig1_acc_vs_scale.png)
+![Figure 1. Acceptance rate vs proposal scale for d = 1, 5, 20. Dashed line: 0.234 (large-d theoretical target). Dotted line: 0.44 (d = 1 target). Acceptance decreases monotonically with scale; at the classical reference scale the curves pass through 0.446 (d = 1), 0.288 (d = 5), 0.248 (d = 20).](outputs/figures/fig1_acc_vs_scale.png){width=50%}
 
 As expected, acceptance decreases monotonically with $\sigma$ and the curve
 at $\sigma = \sigma^\star$ passes through roughly 0.23 for large $d$. For
@@ -191,7 +191,7 @@ rule.
 
 ### 4.3 MSE as a function of proposal scale (Figure 2)
 
-![Figure 2. MSE of the posterior mean vs proposal scale, log-log. The U-shape shows the trade-off between slow exploration (small scale) and frequent rejections (large scale). Error bars show plus or minus 1 SE over 100 replications.](outputs/figures/fig2_mse_vs_scale.png)
+![Figure 2. MSE of the posterior mean vs proposal scale, log-log. The U-shape shows the trade-off between slow exploration (small scale) and frequent rejections (large scale). Error bars show plus or minus 1 SE over 100 replications.](outputs/figures/fig2_mse_vs_scale.png){width=50%}
 
 The MSE of the posterior mean is a U-shaped function of $\sigma$ on a log-log
 scale:
@@ -224,7 +224,7 @@ consistent with the known $d = 1$ optimum.
 
 ### 4.4 MSE as a function of acceptance rate (Figure 3)
 
-![Figure 3. MSE vs acceptance rate, replotted from Figure 2. The U-shape confirms that "tune to a target acceptance rate" is a coherent prescription: the minimum sits near 0.234 for d = 20 and near 0.44 for d = 1, as the asymptotic theory predicts.](outputs/figures/fig3_mse_vs_accept.png)
+![Figure 3. MSE vs acceptance rate, replotted from Figure 2. The U-shape confirms that "tune to a target acceptance rate" is a coherent prescription: the minimum sits near 0.234 for d = 20 and near 0.44 for d = 1, as the asymptotic theory predicts.](outputs/figures/fig3_mse_vs_accept.png){width=50%}
 
 Replotting the same MSE values against acceptance rate gives the classic
 picture: a U-shape, with the minimum at a dimension-dependent acceptance rate.
@@ -239,7 +239,7 @@ dimensions and up to about 0.4 in low dimensions.
 
 ### 4.5 Effective sample size (Figure 4)
 
-![Figure 4. Mean effective sample size per dimension vs proposal scale. ESS is maximised near the classical reference scale and collapses for scales far below or above it, mirroring the MSE pattern.](outputs/figures/fig4_ess_vs_scale.png)
+![Figure 4. Mean effective sample size per dimension vs proposal scale. ESS is maximised near the classical reference scale and collapses for scales far below or above it, mirroring the MSE pattern.](outputs/figures/fig4_ess_vs_scale.png){width=50%}
 
 ESS per dimension at the optimal scale is maximised at roughly $\sigma^\star$
 and collapses when the scale is too small or too large. ESS and MSE give the
@@ -248,9 +248,9 @@ is often more informative than counting acceptance rates alone.
 
 ### 4.6 Mixing: trace plots and autocorrelation (Figures 5 and 6, $d = 5$)
 
-![Figure 5. Trace plots for d = 5 at proposal-scale ratios 0.2 (too small), 1 (optimal), and 5 (too large). The optimal-scale chain mixes; the small-scale chain drifts slowly; the large-scale chain makes no accepted moves at all in 1,000 iterations and stays at its starting value, the limiting case of "too large".](outputs/figures/fig5_trace.png)
+![Figure 5. Trace plots for d = 5 at proposal-scale ratios 0.2 (too small), 1 (optimal), and 5 (too large). The optimal-scale chain mixes; the small-scale chain drifts slowly; the large-scale chain makes no accepted moves at all in 1,000 iterations and stays at its starting value, the limiting case of "too large".](outputs/figures/fig5_trace.png){width=50%}
 
-![Figure 6. Autocorrelation of coordinate 1 for d = 5, same three scales. ACF decays fastest at the optimal scale; at too-small scale it remains high for hundreds of lags. The too-large chain is frozen (zero variance), so its ACF is undefined and is omitted. The absence of a third curve is itself the finding.](outputs/figures/fig6_acf.png)
+![Figure 6. Autocorrelation of coordinate 1 for d = 5, same three scales. ACF decays fastest at the optimal scale; at too-small scale it remains high for hundreds of lags. The too-large chain is frozen (zero variance), so its ACF is undefined and is omitted. The absence of a third curve is itself the finding.](outputs/figures/fig6_acf.png){width=50%}
 
 For $d = 5$ I compare the trace and ACF at $\frac{\sigma}{\sigma^\star} = 0.2$ (too
 small), $1$ (optimal) and $5$ (too large):
@@ -266,9 +266,11 @@ small), $1$ (optimal) and $5$ (too large):
 
 This is the clearest qualitative illustration of why tuning matters.
 
+\FloatBarrier
+
 ### 4.7 Baseline comparison (Figure 8, Table 2)
 
-![Figure 8. RWMH(optimal) vs i.i.d. sampling: MSE of the posterior mean (left) and wall-clock runtime (right), both on log scales. i.i.d. sampling has lower MSE by construction; the ratio quantifies the statistical cost of using MH, and the runtime panel quantifies the computational cost.](outputs/figures/fig8_baseline.png)
+![Figure 8. RWMH(optimal) vs i.i.d. sampling: MSE of the posterior mean (left) and wall-clock runtime (right), both on log scales. i.i.d. sampling has lower MSE by construction; the ratio quantifies the statistical cost of using MH, and the runtime panel quantifies the computational cost.](outputs/figures/fig8_baseline.png){width=50%}
 
 `outputs/tables/table2_baseline.csv` (summarised below as Table 2) compares
 RWMH at $\sigma^\star$ with i.i.d. sampling at the same retained-draw count:
@@ -301,7 +303,7 @@ penalty is a small constant factor and the algorithm is entirely practical.
 
 ### 4.8 Computational-budget condition (Figure 7)
 
-![Figure 7. MSE of the posterior mean vs iteration count N at d = 20 at the classical reference scale. Points lie close to the reference C/N line, confirming 1/N asymptotic decay.](outputs/figures/fig7_budget.png)
+![Figure 7. MSE of the posterior mean vs iteration count N at d = 20 at the classical reference scale. Points lie close to the reference C/N line, confirming 1/N asymptotic decay.](outputs/figures/fig7_budget.png){width=50%}
 
 `outputs/results_budget_summary.csv` and `fig7_budget.png` study the
 optimal-scale chain at $d = 20$ as $N$ varies from 250 to 8000. The MSE
@@ -319,7 +321,7 @@ baseline's $0.039$. Two independent scripts agree.
 
 ### 4.9 Robustness to a correlated target (Figure 9)
 
-![Figure 9. Robustness check: MSE vs proposal scale for an AR(1) target with rho = 0.8 in d = 10. The U-shape persists, but the minimum shifts right of the classical reference scale because the isotropic proposal mismatches the correlated target.](outputs/figures/fig9_robust_corr.png)
+![Figure 9. Robustness check: MSE vs proposal scale for an AR(1) target with rho = 0.8 in d = 10. The U-shape persists, but the minimum shifts right of the classical reference scale because the isotropic proposal mismatches the correlated target.](outputs/figures/fig9_robust_corr.png){width=50%}
 
 The classical optimal-scaling result assumes the proposal has the same shape
 as the target. To test sensitivity, I use an AR(1) covariance with $\rho = 0.8$
