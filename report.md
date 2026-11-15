@@ -1,6 +1,6 @@
 # Random-Walk Metropolis-Hastings: How Proposal Scale Affects Mixing and Estimation Accuracy
 
-Author: [MAI, Qinyuan (21153159)], [SIU, Tsz Cheung (SID)], [LEE, Hoi KIU (SID)]
+Author: [MAI, Qinyuan (21153159)], [SIU, Tsz Cheung (21174787)], [LEE, Hoi KIU (21175262)]
 Course: MATH 3428 Statistical Computing, Fall 2026-27
 
 ---
@@ -448,3 +448,14 @@ gradient-based MCMC addresses these and is the natural next step.
 ---
 
 ## Appendix: Group contribution statement
+
+- **MAI, Qinyuan (21153159):** Implemented the RWMH sampler and diagnostics
+  (`code/algorithm.py`, `code/diagnostics.py`); designed and ran the
+  validation, simulation, baseline, and budget studies; produced all nine
+  figures and three tables; assembled the README, Jupyter notebook, and PDF;
+  wrote §3–4; prepared and delivered the 8-minute presentation.
+
+- **SIU, Tsz Cheung (21174787):** Wrote §5 (Critical analysis) and §6 (Conclusion);
+  compiled the reference list.
+
+- **LEE, Hoi Kiu (21175262):** Wrote §1 (Question and motivation) and §2 (Method).

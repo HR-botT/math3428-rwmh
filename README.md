@@ -2,7 +2,7 @@
 
 MATH 3428 Statistical Computing — Fall 2026–27
 
-**Group:** [MAI, Qinyuan (21153159)], [SIU, Tsz Cheung (SID)], [LEE, Hoi KIU (SID)]
+**Group:** [MAI, Qinyuan (21153159)], [SIU, Tsz Cheung (21174787)], [LEE, Hoi KIU (21175262)]
 
 **Question.** How does proposal scale affect the mixing and estimation accuracy
 of a Metropolis–Hastings sampler, and how does the classical optimal-scaling
@@ -165,4 +165,5 @@ inspected without re-running the pipeline.
 
 ## Contribution statement
 
-[TODO: fill in per-member contributions before submission.]
+See the Appendix of `report.pdf` (or `report.md`) for the full group
+contribution statement.
